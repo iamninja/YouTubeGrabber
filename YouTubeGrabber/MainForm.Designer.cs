@@ -1,6 +1,6 @@
 ﻿namespace YouTubeGrabber
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -68,13 +68,13 @@
             this.downloadUrlButton.Text = "Download";
             this.downloadUrlButton.UseVisualStyleBackColor = true;
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(590, 288);
             this.Controls.Add(this.mainTableLayoutPanel);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "YouTube Grabber";
             this.mainTableLayoutPanel.ResumeLayout(false);
             this.mainTableLayoutPanel.PerformLayout();
