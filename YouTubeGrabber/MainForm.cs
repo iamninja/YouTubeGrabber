@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Web;
+
 using YoutubeExplode;
 using YoutubeExplode.Models;
 
@@ -30,9 +31,10 @@ namespace YouTubeGrabber
 
             // Get video info
             progressBarInfo.Visible = true;
-            progressBarInfo.Style = ProgressBarStyle.Blocks;
+            progressBarInfo.Style = ProgressBarStyle.Marquee;
             var videoInfo = await client.GetVideoInfoAsync(videoId);
             progressBarInfo.Visible = false;
+            progressBarInfo.Refresh();
             thumbnailBox.ImageLocation = videoInfo.ImageThumbnailUrl;
             nameLabel.Text = videoInfo.Title;
             durationLabel.Text = videoInfo.Duration.ToString();
@@ -47,6 +49,8 @@ namespace YouTubeGrabber
             string fileExtension = streamInfo.Container.GetFileExtension();
             string fileName = $"{videoInfo.Id}.{streamInfo.VideoQuality}.{fileExtension}";
             await client.DownloadMediaStreamAsync(streamInfo, fileName);
+
+            StartConverting($"{videoInfo.Id}.{streamInfo.VideoQuality}", $"{fileExtension}");
         }
 
         private void updateFormElements()
@@ -77,6 +81,41 @@ namespace YouTubeGrabber
 
             //Console.WriteLine(videoId);
             return videoId;
+        }
+
+        public void StartConverting(string inputFileName, string fileExtention)
+        {
+            var inputFile = new MediaToolkit.Model.MediaFile { Filename = @".\" + inputFileName + "." + fileExtention };
+            var outputFile = new MediaToolkit.Model.MediaFile { Filename = @".\" + inputFileName + ".mp3" };
+
+            using (var engine = new MediaToolkit.Engine())
+            {
+                engine.ConvertProgressEvent += ConvertProgressEvent;
+                engine.ConversionCompleteEvent += engine_ConversionCompleteEvent;
+                engine.Convert(inputFile, outputFile);
+            }
+        }
+
+        private void ConvertProgressEvent(object sender, MediaToolkit.ConvertProgressEventArgs e)
+        {
+            Console.WriteLine("\n------------\nConverting...\n------------");
+            Console.WriteLine("Bitrate: {0}", e.Bitrate);
+            Console.WriteLine("Fps: {0}", e.Fps);
+            Console.WriteLine("Frame: {0}", e.Frame);
+            Console.WriteLine("ProcessedDuration: {0}", e.ProcessedDuration);
+            Console.WriteLine("SizeKb: {0}", e.SizeKb);
+            Console.WriteLine("TotalDuration: {0}\n", e.TotalDuration);
+        }
+
+        private void engine_ConversionCompleteEvent(object sender, MediaToolkit.ConversionCompleteEventArgs e)
+        {
+            Console.WriteLine("\n------------\nConversion complete!\n------------");
+            Console.WriteLine("Bitrate: {0}", e.Bitrate);
+            Console.WriteLine("Fps: {0}", e.Fps);
+            Console.WriteLine("Frame: {0}", e.Frame);
+            Console.WriteLine("ProcessedDuration: {0}", e.ProcessedDuration);
+            Console.WriteLine("SizeKb: {0}", e.SizeKb);
+            Console.WriteLine("TotalDuration: {0}\n", e.TotalDuration);
         }
     }
 }
