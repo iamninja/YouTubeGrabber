@@ -24,17 +24,34 @@ namespace YouTubeGrabber
         {
             YoutubeClient client = new YoutubeClient();
 
+            // Get url from textBox
+            string url = urlTextBox.Text;
+            string videoId = getIdFromValidUrl(url);
+
             // Get video info
-            //var videoInfo = await client.GetVideoInfoAsync("opnjIcd4L8M");
+            progressBarInfo.Visible = true;
+            progressBarInfo.Style = ProgressBarStyle.Blocks;
+            var videoInfo = await client.GetVideoInfoAsync(videoId);
+            progressBarInfo.Visible = false;
+            thumbnailBox.ImageLocation = videoInfo.ImageThumbnailUrl;
+            nameLabel.Text = videoInfo.Title;
+            durationLabel.Text = videoInfo.Duration.ToString();
+
+            
 
             // Select the highest quality mixed stream
             // (can also use VideoStreams or AudioStreams, if needed)
-            //var streamInfo = videoInfo.MixedStreams.OrderBy(s => s.VideoQuality).Last();
+            var streamInfo = videoInfo.MixedStreams.OrderBy(s => s.VideoQuality).Last();
 
             // Download it to file
-            //string fileExtension = streamInfo.Container.GetFileExtension();
-            //string fileName = $"{videoInfo.Id}.{streamInfo.VideoQuality}.{fileExtension}";
-            //await client.DownloadMediaStreamAsync(streamInfo, fileName);
+            string fileExtension = streamInfo.Container.GetFileExtension();
+            string fileName = $"{videoInfo.Id}.{streamInfo.VideoQuality}.{fileExtension}";
+            await client.DownloadMediaStreamAsync(streamInfo, fileName);
+        }
+
+        private void updateFormElements()
+        {
+
         }
 
         private string getIdFromValidUrl(string url)
