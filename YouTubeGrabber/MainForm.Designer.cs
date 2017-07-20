@@ -67,6 +67,7 @@
             this.downloadUrlButton.TabIndex = 1;
             this.downloadUrlButton.Text = "Download";
             this.downloadUrlButton.UseVisualStyleBackColor = true;
+            this.downloadUrlButton.Click += new System.EventHandler(this.downloadUrlButton_ClickAsync);
             // 
             // MainForm
             // 
